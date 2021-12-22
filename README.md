@@ -13,5 +13,5 @@ Combining files into one libfile has some advantages, especially for disk based 
 
 
 # Notes
-- The code in readlib and sample can be assembled using sjasmplus ( https://github.com/z00m128/sjasmplus )
+- The code in readlib and example can be assembled using sjasmplus ( https://github.com/z00m128/sjasmplus )
 - I used the "MSX constants (EQUs) for assembly development by FRS" ( http://frs.badcoffee.info/tools.html ). These are public domain
