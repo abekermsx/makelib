@@ -42,7 +42,7 @@ void copy_files_to_library(std::ofstream& libfile, std::vector<std::string> file
             per file: 3 bytes: position in library
                       3 bytes: filesize
 */
-void build_library_directory(std::ofstream& libfile, std::vector<std::string> files)
+int build_library_directory(std::ofstream& libfile, std::vector<std::string> files)
 {
     //calculate position of first file in directory
     int file_pointer = 2 + 6 * (int)files.size();
@@ -60,6 +60,8 @@ void build_library_directory(std::ofstream& libfile, std::vector<std::string> fi
 
         file_pointer += (int)file_size;
     }
+
+    return file_pointer;
 }
 
 
@@ -76,6 +78,10 @@ std::vector<std::string> get_files_from_file(char* files_name)
         if (line.at(0) == ';') continue;
         if (line.at(0) <= 32) continue;
 
+        std::size_t index = line.find(':');
+        if (index != std::string::npos)
+            line = line.substr(0, index);
+
         files.push_back(line);
     }
 
@@ -91,7 +97,7 @@ bool all_files_exist(std::vector<std::string> files)
     {
         if (!std::filesystem::exists(file))
         {
-            std::cout << "File " << file << " doesn't exist." << std::endl;
+            std::cerr << "File " << file << " doesn't exist." << std::endl;
             all_files_exist = false;
         }
     }
@@ -108,14 +114,23 @@ bool all_options_are_valid(int argc, char* argv[])
         if (strcmp(argv[i], "-l") != 0 && strcmp(argv[i], "-list") != 0
             && strcmp(argv[i], "-o") != 0 && strcmp(argv[i], "-output") != 0)
         {
-            std::cout << "Invalid option " << argv[i] << std::endl;
+            std::cerr << "Invalid option " << argv[i] << std::endl;
             return false;
         }
 
         if ((i + 1) == argc)
         {
-            std::cout << "Missing argument for option " << argv[i] << std::endl;
+            std::cerr << "Missing argument for option " << argv[i] << std::endl;
             return false;
+        }
+
+        if (strcmp(argv[i], "-l") == 0 || strcmp(argv[i], "-list") == 0)
+        {
+            if (!std::filesystem::exists(argv[i + 1]))
+            {
+                std::cerr << "List file " << argv[i + 1] << " doesn't exist." << std::endl;
+                return false;
+            }
         }
     }
 
@@ -145,7 +160,7 @@ std::vector<std::string> get_files_from_arguments(int argc, char* argv[])
         {
             if (strcmp(argv[i], "-l") == 0 || strcmp(argv[i], "-list") == 0)
             {
-                std::vector<std::string> files_from_file = get_files_from_file(argv[i+1]);
+                std::vector<std::string> files_from_file = get_files_from_file(argv[i + 1]);
                 files.insert(files.end(), files_from_file.begin(), files_from_file.end());
             }
 
@@ -189,7 +204,7 @@ int main(int argc, char* argv[])
 
     if (library_filename == nullptr)
     {
-        std::cout << "No output file specified." << std::endl;
+        std::cerr << "No output file specified." << std::endl;
         return 0;
     }
 
@@ -197,7 +212,7 @@ int main(int argc, char* argv[])
 
     if (files.size() == 0)
     {
-        std::cout << "No files to include in the library have been specified." << std::endl;
+        std::cerr << "No files to include in the library have been specified." << std::endl;
         return 0;
     }
 
@@ -206,13 +221,14 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    std::cout << "Start building library." << std::endl;
+    std::cout << "Start building library " << library_filename << "..." << std::endl;
 
     std::ofstream libfile(library_filename, std::ios::binary);
-    build_library_directory(libfile, files);
+    int total_size = build_library_directory(libfile, files);
     copy_files_to_library(libfile, files);
 
-    std::cout << "Finished building library." << std::endl;
+    std::cout << "Finished building library!";
+    std::cout << " (" << files.size() << " files, " << total_size << " bytes)" << std::endl;
 
     return 0;
 }
