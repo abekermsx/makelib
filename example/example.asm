@@ -34,8 +34,8 @@ entry:
 		call BDOSBAS
 		
 ; Load the second file
-		ld de,$a000
 		ld hl,1
+		ld de,$a000
 		call libfile.load_file
 		
 ; Add "$" after file contents
