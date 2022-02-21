@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 
     if (!all_options_are_valid(argc, argv))
     {
-        return 0;
+        return 1;
     }
 
     char* library_filename = get_output_filename(argc, argv);
@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
     if (library_filename == nullptr)
     {
         std::cerr << "No output file specified." << std::endl;
-        return 0;
+        return 1;
     }
 
     std::vector<std::string> files = get_files_from_arguments(argc, argv);
@@ -213,12 +213,12 @@ int main(int argc, char* argv[])
     if (files.size() == 0)
     {
         std::cerr << "No files to include in the library have been specified." << std::endl;
-        return 0;
+        return 1;
     }
 
     if (!all_files_exist(files))
     {
-        return 0;
+        return 2;
     }
 
     std::cout << "Start building library " << library_filename << "..." << std::endl;
