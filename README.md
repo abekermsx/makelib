@@ -9,7 +9,7 @@ Combining files into one libfile has some advantages, especially for disk based 
 # Contents
 - makelib: Tool for creating libfiles
 - readlib: Code for reading libfiles (for MSX)
-- example: A simple example demonstrating how to use readlib (for MSX)
+- examples: Two simple examples demonstrating how to use a libfile from your own program (for MSX)
 
 
 # Notes
