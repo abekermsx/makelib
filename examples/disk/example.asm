@@ -3,6 +3,10 @@
         OUTPUT "EXAMPLE.BIN"
 
 		
+		include "../system/MSX-DOS.equ.z80"
+		
+		include "example.txt"
+		
         org $9000 - 7
 
 header: db $fe
@@ -16,8 +20,8 @@ entry:
 		ld de,directory
 		call libfile.load_directory
 		
-; Load the first file
-		ld hl,0
+; Load the file hello.txt
+		ld hl,hello.txt
 		ld de,$a000
 		call libfile.load_file
 		
@@ -33,7 +37,7 @@ entry:
 		ld de,$a000
 		call BDOSBAS
 		
-; Load the second file
+; Load the file world.txt
 		ld hl,1
 		ld de,$a000
 		call libfile.load_file
@@ -52,7 +56,6 @@ entry:
 		ret
 		
 		
-		include "../readlib/MSX-DOS.equ.z80"
 		include "../readlib/readlib.asm"
 		
 
